@@ -1,19 +1,22 @@
 const fs = require('fs')
 
-const filePath = '../../templates/layout/base.html'
+const base = fs.readFileSync('../../templates/layout/base.html', 'utf8')
+const empty = fs.readFileSync('../../templates/layout/empty.html', 'utf8')
 
-if (!fs.existsSync(filePath)) {console.log('GraphQL token install failed. File not found templates/layout/base.html');process.exit()}
+const installation = '<script id="BC_GraphQL_Token" type="application/json">"{{settings.storefront_api.token}}"</script>'
 
-const base = fs.readFileSync(filePath, 'utf8')
+function install(contents){
+    if (contents.includes(installation)) return contents
 
-const bodyStart = '<body class="template_{{#replace '/' template_file}}-{{/replace}}">'
+    const splitter = contents.match(/<body.*>/)
 
-const split = base.split(bodyStart)
+    const parts = contents.split(splitter)
 
-if (split.length < 2) {console.log('GraphQL token install failed. Couldnt find start of body tag in templates/layout/base.html');process.exit()}
+    return `${parts[0]}
+    ${splitter}
+        ${installation}
+    ${parts[1]}`
+}
 
-const token = '\n        <script id="BC_GraphQL_Token" type="application/json">{"token":"{{settings.storefront_api.token}}"}</script>\n'
-
-const newFile = split[0] + bodyStart + token + split[1]
-
-fs.writeFileSync(filePath, newFile)
+fs.writeFileSync('../../templates/layout/base.html', install(base))
+fs.writeFileSync('../../templates/layout/empty.html', install(empty))

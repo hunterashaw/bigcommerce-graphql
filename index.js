@@ -1,57 +1,34 @@
-const token = JSON.parse(document.getElementById("BC_GraphQL_Token").text).token
+const token = JSON.parse(document.getElementById('BC_GraphQL_Token').textContent)
 
-console.log('BC GQL Token:', token)
-
-export async function getQuery(query){
+/**
+ * Performs a GraphQL query and returns a cleaned result of the data (removes edges & nodes from arrays).
+ * @async
+ * @param {string} query GraphQL query without 'query' keyword. Example: `{ site { categoryTree { name } } }`
+ */
+async function get(query, removeEdges=true){
     const response = await fetch('/graphql', {
         method: 'post',
         headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+         'Content-Type': 'application/json',
+         'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ query }),
-    })
+        body: JSON.stringify({query})
+    });
     if (response.ok)
-        return (await response.json()).data
-    throw Error(`GraphQL error ${response.status} - ${response.statusText}`)
+        return removeEdges ? clean((await response.json()).data) : (await response.json()).data
+    else
+        throw Error(`GraphQL error ${response.status} - ${response.statusText}`)
 }
 
-/**
- * GraphQL product price options. Set other properties to true to retrieve their values.
- * @typedef {Object} prices
- * @property {boolean} price
- * @property {boolean} salePrice
- * @property {boolean} basePrice
- * @property {boolean} retailPrice
- * @property {boolean} minPrice
- * @property {boolean} maxPrice
- * @property {boolean} saved
- * 
- */
-
-/**
- * GraphQL product options. Requires either id or sku to get product. Set other properties to true to retrieve their values.
- * @typedef {Object} product
- * @property {int} id Product ID
- * @property {string} sku Product SKU
- * @property {boolean} name
- * @property {boolean} description
- * @property {boolean} minPurchaseQuantity
- * @property {boolean} maxPurchaseQuantity
- * @property {boolean} addToCartUrl
- * @property {boolean} addToWishlistUrl
- * @property {boolean} prices
- * @property {boolean} weight
- * @property {boolean} height
- * @property {boolean} width
- * @property {boolean} depth
- * @property {prices} prices
- */
-
-export async function getProduct(options){
-
+function clean(data){
+    for (let property in data){
+        if (data[property].edges !== undefined) {
+            data[property]
+            data[property] = data[property].edges.map((element)=>element.node)
+        }
+        else if (typeof data[property] === 'object' && !Array.isArray(data[property])) clean(data[property])
+    }
+    return data
 }
 
-export async function getProducts(options){
-
-}
+module.exports = get
