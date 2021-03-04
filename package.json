@@ -1,0 +1,17 @@
+{
+  "name": "bigcommerce-graphql",
+  "version": "1.0.0",
+  "description": "Simple GraphQL client for the BigCommerce Storefront GraphQL API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node install"
+  },
+  "keywords": [
+    "bigcommerce",
+    "graphql",
+    "storefront"
+  ],
+  "author": "Hunter Shaw",
+  "license": "ISC"
+}
