@@ -1,12 +1,16 @@
 {
   "name": "bigcommerce-graphql",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple GraphQL interface for BigCommerce Cornerstone theme.",
   "main": "index.js",
   "scripts": {
     "install": "node install"
   },
-  "keywords": [],
+  "repository":{
+    "type":"git",
+    "url": "https://github.com/hunterashaw/bigcommerce-graphql"
+  },
+  "keywords": ["bigcommerce", "graphql", "client", "big", "commerce"],
   "author": "Hunter Shaw",
   "license": "ISC"
 }
