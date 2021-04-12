@@ -6,7 +6,9 @@ Simple GraphQL client for the cornerstone theme. Automatically handles authoriza
 
 `npm i bigcommerce-graphql`
 
-This will automatically make changes to the `templates/layout/base.html` & `templates/layout/empty.html` files by adding a handlebar JSON GraphQL token for authentication.
+This will automatically make changes to any file in the  `templates/layout/*.html` files by adding a handlebar JSON GraphQL token for authentication.
+
+Console output during install should indicate if there were any issues.
 
 ## Usage
 
