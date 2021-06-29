@@ -5,29 +5,38 @@ const token = JSON.parse(document.getElementById('BC_GraphQL_Token').textContent
  * @async
  * @param {string} query GraphQL query without 'query' keyword. Example: `{ site { categoryTree { name } } }`
  */
-async function get(query, removeEdges=true){
+async function get(query, removeEdges=true) {
     const response = await fetch('/graphql', {
         method: 'post',
         headers: {
-         'Content-Type': 'application/json',
-         'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({query})
     });
-    if (response.ok)
-        return removeEdges ? clean((await response.json()).data) : (await response.json()).data
-    else
+
+    if (response.ok) {
+        const { data } = await response.json()
+
+        return removeEdges
+            ? clean(data)
+            : data
+    } else
         throw Error(`GraphQL error ${response.status} - ${response.statusText}`)
 }
 
 function clean(data){
     for (let property in data){
-        if (data[property].edges !== undefined) {
-            data[property]
-            data[property] = data[property].edges.map((element)=>element.node)
-        }
-        else if (typeof data[property] === 'object' && !Array.isArray(data[property])) clean(data[property])
+        const hasEdge = !!data[property].edges
+        const isObject = typeof data[property] === 'object'
+        const isArray = Array.isArray(data[property])
+
+        if (hasEdge)
+            data[property] = data[property].edges.map((element) => element.node)
+        if (isObject || isArray)
+            clean(data[property])
     }
+
     return data
 }
 
