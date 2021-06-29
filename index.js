@@ -28,20 +28,13 @@ async function get(query, removeEdges=true) {
 function clean(data){
     for (let property in data){
         const hasEdge = !!data[property].edges
-
-        if (hasEdge)
-            data[property] = data[property].edges.map((element) => element.node)
-
         const isObject = typeof data[property] === 'object'
         const isArray = Array.isArray(data[property])
 
-        if (isObject && !isArray)
+        if (hasEdge)
+            data[property] = data[property].edges.map((element) => element.node)
+        if (isObject || isArray)
             clean(data[property])
-
-        if (isArray) {
-            for (const i of data[property])
-                clean(i)
-        }
     }
 
     return data
