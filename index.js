@@ -32,8 +32,15 @@ function clean(data){
             const isObject = typeof data[property] === 'object'
             const isArray = Array.isArray(data[property])
 
-            if (hasEdge)
+            if (hasEdge){
+                // Retain other properties like pageInfo within the parent in a concatenated property name
+                for (const property_name in data[property]){
+                    if (property_name !== 'edges'){
+                        data[property + property_name] = data[property][property_name]
+                    }
+                }
                 data[property] = data[property].edges.map((element) => element.node)
+            }
             if (isObject || isArray)
                 clean(data[property])
         }
